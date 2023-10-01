@@ -9,5 +9,6 @@ A comprehensive goal management app that helps users set, track, and achieve the
 
 #Group Members Name:-
 - Keval Shetta
+- Priyal Shah
 
 
