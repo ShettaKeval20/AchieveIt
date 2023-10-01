@@ -11,5 +11,5 @@ A comprehensive goal management app that helps users set, track, and achieve the
 - Keval Shetta
 - Priyal Shah
 - Krushna Joshi
-
+- Riya Goswami
 
