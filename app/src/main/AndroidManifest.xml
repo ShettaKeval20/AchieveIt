@@ -13,11 +13,19 @@
         android:theme="@style/Theme.AchieveIt"
         tools:targetApi="31">
         <activity
-            android:name=".LoginActivity"
+            android:name=".ForgotActivity"
             android:exported="false" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".SplashActivity"
             android:exported="true"
+            android:screenOrientation="portrait"
             android:theme="@style/SplashScreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "432623831112",
+    "project_id": "achieveit-2023",
+    "storage_bucket": "achieveit-2023.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:432623831112:android:a9d2f253d53bdc2eb0707d",
+        "android_client_info": {
+          "package_name": "com.example.achieveit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "432623831112-sipcub0ogj8spvktl2rk7tod4dooge1p.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.achieveit",
+            "certificate_hash": "ca7296f52acdf70bd2844d61593aa1a1f8e8f507"
+          }
+        },
+        {
+          "client_id": "432623831112-0tag2e9ov2hu5nqtb3ti58djsa1dk49j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDIbxLR39GOqh73lhJ-94oW1Spin9r0EEw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "432623831112-0tag2e9ov2hu5nqtb3ti58djsa1dk49j.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
