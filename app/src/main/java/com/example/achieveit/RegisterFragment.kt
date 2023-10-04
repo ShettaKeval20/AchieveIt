@@ -27,6 +27,8 @@ class RegisterFragment : Fragment() {
 
     private var mAuth: FirebaseAuth? = null
 
+//    private val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+.[a-z]+".toRegex()
+
     @SuppressLint("MissingInflatedId")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -95,6 +97,7 @@ class RegisterFragment : Fragment() {
             rPassword.getText().toString()
         ).addOnCompleteListener { task ->
             if (task.isSuccessful) {
+
                 val mainIntent = Intent(requireContext(), LoginActivity::class.java)
                 startActivity(mainIntent)
                 requireActivity().finish()
@@ -112,7 +115,7 @@ class RegisterFragment : Fragment() {
                 val message = task.exception!!.message
                 Toast.makeText(
                     requireContext(),
-                    "Error occurred: $message",
+                    "Email or password are incorrect",
                     Toast.LENGTH_SHORT
                 ).show()
                 loadingBar!!.dismiss()

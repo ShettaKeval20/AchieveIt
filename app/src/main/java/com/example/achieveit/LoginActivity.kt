@@ -104,7 +104,7 @@ class LoginActivity : AppCompatActivity() {
                 startActivity(mainIntent)
                 this.finish()
             }else{
-                Toast.makeText(this, it.exception.toString(), Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Try again later", Toast.LENGTH_LONG).show()
             }
         }
     }
