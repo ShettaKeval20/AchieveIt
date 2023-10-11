@@ -21,7 +21,7 @@ class SplashActivity : AppCompatActivity() {
 
         splash.animate().setDuration(1500).alpha(1f).withEndAction {
 
-            val intent = Intent(this, LoginActivity::class.java)
+            val intent = Intent(this, MainActivity::class.java)
             startActivities(arrayOf(intent))
             finish()
         }
