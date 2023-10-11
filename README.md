@@ -13,19 +13,21 @@ A comprehensive goal management app that helps users set, track, and achieve the
 - Riya Goswami
 
 # Features
-- 1. User Registration n Login
-- 2. Dashboard
-- 3. Create and edit goals with details like title, description, deadline, and priority.
-- 4. Goal Categories(Personal, Health, Work, etc.)
-- 5. Set reminders for goals.
-- 6. Create tasks associated with goals.
-- 7. Set due dates and priorities for tasks.
-- 8. Mark tasks as completed or in progress.
-- 9. Integrate with device sensors or allow manual entry for sleep data.
-- 10. Display sleep patterns, including duration, quality, and interruptions.
-- 11. Provide insights into the impact of sleep on productivity.
-- 12. Allow users to update and track the progress of their goals.
-- 13. Visualize progress through charts or graphs.
-- 14. Let users add notes or journal entries related to their goals and sleep patterns.
-- 15. Allow users to customize the app's appearance with different themes, colors, and fonts to make it more personalized.
-- 16. Dark Mode.
+1. Displays an overview of their today’s task.(Dashboard)
+2. Add button to create task. (task name, timer, description, active or not, due date & time, note).
+3. Set due dates and priorities for tasks.
+4. Edit and delete task.
+5. Mark tasks as completed or in progress.
+6. Active task button which will show your all tasks which are currently active.
+7. Task list which you create but did not start.
+8. Which will show your task’s time when you started and when you finished. (Calendar)
+9. You can see your past task timing too by selecting date. (Calendar)
+10. In which you can see your all tasks which are finished with their date and time.(History).
+11. Visualize progress through charts and graph (day, weekly, monthly) 
+12. Share and print option of report.(Charts)
+13. App appearance with light, dark
+14. Notifications
+15. Reminders 
+16. Rating App
+
+
