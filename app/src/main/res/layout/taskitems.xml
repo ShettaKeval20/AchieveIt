@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/taskNameTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Task Name"
+            android:textStyle="bold"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/descriptionTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/taskNameTextView"
+            android:layout_marginTop="8dp"
+            android:text="Description" />
+
+        <TextView
+            android:id="@+id/activeTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/descriptionTextView"
+            android:layout_marginTop="8dp"
+            android:text="Active" />
+
+        <TextView
+            android:id="@+id/timerTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/activeTextView"
+            android:layout_marginTop="8dp"
+            android:text="Timer" />
+
+        <TextView
+            android:id="@+id/pieChartTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/timerTextView"
+            android:layout_marginTop="8dp"
+            android:text="Explode Piechart" />
+
+        <TextView
+            android:id="@+id/noteTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/pieChartTextView"
+            android:layout_marginTop="8dp"
+            android:text="Note" />
+
+        <!-- Add any additional views or elements here based on your data from the database -->
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

@@ -1,0 +1,122 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    android:id="@+id/addtasklayout"
+    android:background="@drawable/dialog_border">
+
+    <Button
+        android:id="@+id/closeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="13dp"
+        android:text="X"
+        android:textColor="@android:color/holo_orange_light" />
+
+    <EditText
+        android:id="@+id/editTextTaskName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="70dp"
+        android:hint="Task Name" />
+
+    <EditText
+        android:id="@+id/editTextDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editTextTaskName"
+        android:layout_marginTop="33dp"
+        android:hint="Description" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editTextDescription"
+        android:layout_marginTop="16dp"
+        android:text="Active"
+        android:textColor="@android:color/black"/>
+
+    <ToggleButton
+        android:id="@+id/toggleButtonActive"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editTextDescription"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="26dp"
+        android:textColor="@android:color/holo_orange_light" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toggleButtonActive"
+        android:layout_marginTop="16dp"
+        android:text="Timer"
+        android:textColor="@android:color/black"/>
+
+    <ToggleButton
+        android:id="@+id/toggleButtonTimer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toggleButtonActive"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="26dp"
+        android:textColor="@android:color/holo_orange_light" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toggleButtonTimer"
+        android:layout_marginTop="16dp"
+        android:text="Explode Piechart"
+        android:textColor="@android:color/black"/>
+
+    <ToggleButton
+        android:id="@+id/toggleButtonPieChart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toggleButtonTimer"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="26dp"
+        android:textColor="@android:color/holo_orange_light" />
+
+    <EditText
+        android:id="@+id/editTextNote"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toggleButtonPieChart"
+        android:layout_marginTop="10dp"
+        android:hint="Note" />
+
+    <LinearLayout
+        android:id="@+id/buttonLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editTextNote"
+        android:layout_marginTop="32dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/saveButton"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Save"
+            android:backgroundTint="@android:color/holo_orange_light"
+            android:textColor="@android:color/white"
+            android:layout_marginEnd="16dp"/>
+
+        <Button
+            android:id="@+id/cancelButton"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Cancel"
+            android:backgroundTint="@android:color/holo_orange_light"
+            android:textColor="@android:color/white"/>
+
+    </LinearLayout>
+
+</RelativeLayout>
