@@ -1,5 +1,6 @@
 package com.example.achieveit
 
+import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,10 +10,16 @@ import android.widget.EditText
 import android.widget.ToggleButton
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
+import java.time.ZoneId
+import java.util.Calendar
+import java.util.Date
 
 class CustomDialogFragment : DialogFragment() {
 
+    private var selectedDueDate: Calendar = Calendar.getInstance()
+
     private lateinit var dbHelper: TaskFragment.TasksDatabaseHelper // Import the DBHelper from TaskFragment
+    private lateinit var editTextDueDate: EditText
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,6 +39,13 @@ class CustomDialogFragment : DialogFragment() {
         val toggleButtonPieChart = view.findViewById<ToggleButton>(R.id.toggleButtonPieChart)
         val saveButton = view.findViewById<Button>(R.id.saveButton)
         val cancelButton = view.findViewById<Button>(R.id.cancelButton)
+        editTextDueDate = view.findViewById(R.id.editTextDueDate)
+
+
+        // Set an OnClickListener for the due date EditText
+        editTextDueDate.setOnClickListener {
+            showDatePickerDialog()
+        }
 
         // Set click listener for save button
         saveButton.setOnClickListener {
@@ -46,8 +60,10 @@ class CustomDialogFragment : DialogFragment() {
                 val hasTimer = toggleButtonTimer.isChecked
                 val showPieChart = toggleButtonPieChart.isChecked
 
+
+
                 // Add your data to the database
-                val task = Task(taskName, description, isActive, hasTimer, showPieChart, note)
+                val task = Task(taskName, description, isActive, selectedDueDate.time , hasTimer, showPieChart, note)
                 val isInserted = dbHelper.insertTask(task)
                 if (isInserted != -1L) {
                     Toast.makeText(requireContext(), "Data saved successfully", Toast.LENGTH_SHORT).show()
@@ -65,5 +81,22 @@ class CustomDialogFragment : DialogFragment() {
         }
 
         return view
+    }
+    private fun showDatePickerDialog() {
+        val year = selectedDueDate.get(Calendar.YEAR)
+        val month = selectedDueDate.get(Calendar.MONTH)
+        val day = selectedDueDate.get(Calendar.DAY_OF_MONTH)
+
+        val datePickerDialog = DatePickerDialog(
+            requireContext(),
+            DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+                // Update the selected due date
+                selectedDueDate.set(year, month, dayOfMonth)
+                // Update the due date EditText to display the selected date
+                editTextDueDate.setText("$year-${month + 1}-$dayOfMonth")
+            },
+            year, month, day
+        )
+        datePickerDialog.show()
     }
 }

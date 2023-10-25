@@ -15,6 +15,10 @@ import android.database.sqlite.SQLiteException
 import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class TaskFragment : Fragment() {
 
@@ -70,6 +74,7 @@ class TaskFragment : Fragment() {
                 put(COLUMN_TASK_NAME, task.taskName)
                 put(COLUMN_DESCRIPTION, task.description)
                 put(COLUMN_IS_ACTIVE, if (task.isActive) 1 else 0)
+                put(COLUMN_DUE_DATE, formatDate(task.dueDate))
                 put(COLUMN_HAS_TIMER, if (task.hasTimer) 1 else 0)
                 put(COLUMN_SHOW_PIE_CHART, if (task.showPieChart) 1 else 0)
                 put(COLUMN_NOTE, task.note)
@@ -77,6 +82,11 @@ class TaskFragment : Fragment() {
             val result = db.insert(TABLE_NAME, null, values)
             db.close()
             return result
+        }
+
+        private fun formatDate(date: Date): String {
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            return dateFormat.format(date)
         }
 
         @SuppressLint("Range")
@@ -92,11 +102,13 @@ class TaskFragment : Fragment() {
                         val taskName = cursor.getString(cursor.getColumnIndex(COLUMN_TASK_NAME))
                         val description = cursor.getString(cursor.getColumnIndex(COLUMN_DESCRIPTION))
                         val isActive = cursor.getInt(cursor.getColumnIndex(COLUMN_IS_ACTIVE)) == 1
+                        val dueDateStr = cursor.getString(cursor.getColumnIndex(COLUMN_DUE_DATE))
+                        val dueDate = parseDate(dueDateStr)
                         val hasTimer = cursor.getInt(cursor.getColumnIndex(COLUMN_HAS_TIMER)) == 1
                         val showPieChart = cursor.getInt(cursor.getColumnIndex(COLUMN_SHOW_PIE_CHART)) == 1
                         val note = cursor.getString(cursor.getColumnIndex(COLUMN_NOTE))
 
-                        val task = Task(taskName, description, isActive, hasTimer, showPieChart, note)
+                        val task = Task(taskName, description, isActive,dueDate, hasTimer, showPieChart, note)
                         taskList.add(task)
                     }
                 }
@@ -110,6 +122,15 @@ class TaskFragment : Fragment() {
             }
         }
 
+        private fun parseDate(dateStr: String): Date {
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            return try {
+                dateFormat.parse(dateStr)
+            } catch (e: ParseException) {
+                Date()
+            }
+        }
+
 
         companion object {
             const val DATABASE_VERSION = 1
@@ -118,10 +139,11 @@ class TaskFragment : Fragment() {
             const val COLUMN_TASK_NAME = "taskName"
             const val COLUMN_DESCRIPTION = "description"
             const val COLUMN_IS_ACTIVE = "active"
+            const val COLUMN_DUE_DATE = "Date"
             const val COLUMN_HAS_TIMER = "timer"
             const val COLUMN_SHOW_PIE_CHART = "pieChart"
             const val COLUMN_NOTE = "note"
-            private const val SQL_CREATE_ENTRIES = "CREATE TABLE $TABLE_NAME ($COLUMN_TASK_NAME TEXT, $COLUMN_DESCRIPTION TEXT, $COLUMN_IS_ACTIVE INTEGER, $COLUMN_HAS_TIMER INTEGER, $COLUMN_SHOW_PIE_CHART INTEGER, $COLUMN_NOTE TEXT)"
+            private const val SQL_CREATE_ENTRIES = "CREATE TABLE $TABLE_NAME ($COLUMN_TASK_NAME TEXT, $COLUMN_DESCRIPTION TEXT, $COLUMN_IS_ACTIVE INTEGER, $COLUMN_DUE_DATE DATE, $COLUMN_HAS_TIMER INTEGER, $COLUMN_SHOW_PIE_CHART INTEGER, $COLUMN_NOTE TEXT)"
             //private const val SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS $TABLE_NAME"
         }
     }

@@ -34,10 +34,17 @@
             android:text="Active" />
 
         <TextView
-            android:id="@+id/timerTextView"
+            android:id="@+id/dueDatetextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/activeTextView"
+            android:text="dueDate" />
+
+        <TextView
+            android:id="@+id/timerTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/dueDatetextView"
             android:layout_marginTop="8dp"
             android:text="Timer" />
 
@@ -56,6 +63,8 @@
             android:layout_below="@id/pieChartTextView"
             android:layout_marginTop="8dp"
             android:text="Note" />
+
+
 
         <!-- Add any additional views or elements here based on your data from the database -->
 
