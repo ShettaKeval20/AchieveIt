@@ -6,6 +6,11 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.database.sqlite.SQLiteException
 import android.util.Log
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 class TasksDatabaseHelper(context: Context) :
     SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
@@ -20,6 +25,8 @@ class TasksDatabaseHelper(context: Context) :
         const val COLUMN_HAS_TIMER = "has_timer"
         const val COLUMN_SHOW_PIE_CHART = "show_pie_chart"
         const val COLUMN_NOTE = "note"
+        private const val SQL_CREATE_ENTRIES = "CREATE TABLE $TABLE_NAME ($COLUMN_TASK_NAME TEXT, $COLUMN_DESCRIPTION TEXT, $COLUMN_IS_ACTIVE INTEGER,  $COLUMN_HAS_TIMER INTEGER, $COLUMN_SHOW_PIE_CHART INTEGER, $COLUMN_NOTE TEXT)"
+        private const val SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS $TABLE_NAME"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
@@ -54,10 +61,43 @@ class TasksDatabaseHelper(context: Context) :
         } catch (e: SQLiteException) {
             // Handle the exception here
             e.printStackTrace()
-      }
+        } finally {
+            db.close()
+        }
+
+
+        //        delete Task
+        fun deleteTask(task: Task): Int {
+            val db = this.writableDatabase
+            return try {
+                val whereClause = "$COLUMN_TASK_NAME = ?"
+                val whereArgs = arrayOf(task.taskName)
+                val deletedRows = db.delete(TABLE_NAME, whereClause, whereArgs)
+                deletedRows // Returns the number of rows deleted
+            } catch (e: SQLiteException) {
+                // Handle the exception here or return an error code
+                e.printStackTrace()
+                -1 // Return -1 to indicate an error
+            } finally {
+                db.close()
+            }
+        }
 //        finally {
 ////            db.close()
 ////        }
+    }
+
+    private fun dateToCalendarFormat(dueDate: Calendar): String {
+        val day = dueDate.get(Calendar.DAY_OF_MONTH)
+        val month = dueDate.get(Calendar.MONTH) + 1 // Months are 0-based, so add 1
+        val year = dueDate.get(Calendar.YEAR)
+
+        return String.format(Locale.getDefault(), "%02d/%02d/%04d", month, day, year)
+    }
+
+
+    fun deleteTask(task: Task) {
+
     }
 }
 

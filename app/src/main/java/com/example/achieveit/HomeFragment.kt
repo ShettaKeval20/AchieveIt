@@ -10,7 +10,7 @@ import java.util.Calendar
 
 class HomeFragment : Fragment() {
 
-        private lateinit var wishView: TextView
+    private lateinit var wishView: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -31,7 +31,7 @@ class HomeFragment : Fragment() {
         return view
     }
 
-        private fun getGreeting(hour: Int): String {
+    private fun getGreeting(hour: Int): String {
         return when (hour) {
             in 6..11 -> "Good Morning"
             in 12..16 -> "Good Afternoon"

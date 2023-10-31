@@ -5,51 +5,51 @@
     android:layout_height="match_parent"
     tools:context=".HomeFragment">
 
-<!--    &lt;!&ndash; TODO: Update blank fragment layout &ndash;&gt;-->
-<!--    <TextView-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:gravity="center"-->
-<!--        android:text="Home Fragment" />-->
+    <!--    &lt;!&ndash; TODO: Update blank fragment layout &ndash;&gt;-->
+    <!--    <TextView-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="match_parent"-->
+    <!--        android:gravity="center"-->
+    <!--        android:text="Home Fragment" />-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_margin="10dp"
+        android:layout_marginTop="10dp"
+        tools:ignore="MissingConstraints">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_margin="10dp"
             android:layout_marginTop="10dp"
-            tools:ignore="MissingConstraints">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Hello, "
-                    android:textSize="20sp"
-                    android:textColor="#A9A9A9"/>
-
-                <TextView
-                    android:id="@+id/wishView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Good Morning"
-                    android:textSize="26sp"
-                    android:textColor="#A9A9A9"/>
-
-            </LinearLayout>
+            android:orientation="horizontal">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Have a nice day!"
-                android:textSize="16sp"
-                android:textColor="#A0A0A0"/>
+                android:text="Hello, "
+                android:textSize="20sp"
+                android:textColor="#A9A9A9"/>
+
+            <TextView
+                android:id="@+id/wishView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Good Morning"
+                android:textSize="26sp"
+                android:textColor="#A9A9A9"/>
 
         </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Have a nice day!"
+            android:textSize="16sp"
+            android:textColor="#A0A0A0"/>
+
+    </LinearLayout>
 
 </FrameLayout>
