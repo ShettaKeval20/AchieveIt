@@ -12,7 +12,6 @@ import android.widget.Button
 import androidx.fragment.app.Fragment
 import android.content.ContentValues
 import android.database.sqlite.SQLiteException
-import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import java.text.ParseException
@@ -84,17 +83,48 @@ class TaskFragment : Fragment() {
             return result
         }
 
-        private fun formatDate(date: Date): String {
+        private fun formatDate(date: String): String {
             val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
             return dateFormat.format(date)
         }
 
         @SuppressLint("Range")
+//        fun getAllTasks(): ArrayList<Task> {
+//            val taskList = ArrayList<Task>()
+//            val selectQuery = "SELECT * FROM $TABLE_NAME"
+//            val db = this.readableDatabase
+//            Log.d("database", "database open")
+//
+//            return try {
+//                db.rawQuery(selectQuery, null).use { cursor ->
+//                    while (cursor.moveToNext()) {
+//                        val taskName = cursor.getString(cursor.getColumnIndex(COLUMN_TASK_NAME))
+//                        val description = cursor.getString(cursor.getColumnIndex(COLUMN_DESCRIPTION))
+//                        val isActive = cursor.getInt(cursor.getColumnIndex(COLUMN_IS_ACTIVE)) == 1
+//                        val dueDateStr = cursor.getString(cursor.getColumnIndex(COLUMN_DUE_DATE))
+//                        val dueDate = parseDate(dueDateStr)
+//                        val hasTimer = cursor.getInt(cursor.getColumnIndex(COLUMN_HAS_TIMER)) == 1
+//                        val showPieChart = cursor.getInt(cursor.getColumnIndex(COLUMN_SHOW_PIE_CHART)) == 1
+//                        val note = cursor.getString(cursor.getColumnIndex(COLUMN_NOTE))
+//
+//                        val task = Task(taskName, description, isActive,dueDate, hasTimer, showPieChart, note)
+//                        taskList.add(task)
+//                    }
+//                }
+//                taskList
+//            } catch (e: SQLiteException) {
+//                // Handle the exception here
+//                e.printStackTrace()
+//                ArrayList()
+//            } finally {
+//                db.close()
+//            }
+//        }
+
         fun getAllTasks(): ArrayList<Task> {
             val taskList = ArrayList<Task>()
-            val selectQuery = "SELECT * FROM $TABLE_NAME"
+            val selectQuery = "SELECT * FROM $TABLE_NAME" // Retrieve all columns
             val db = this.readableDatabase
-            Log.d("database", "database open")
 
             return try {
                 db.rawQuery(selectQuery, null).use { cursor ->
@@ -108,19 +138,20 @@ class TaskFragment : Fragment() {
                         val showPieChart = cursor.getInt(cursor.getColumnIndex(COLUMN_SHOW_PIE_CHART)) == 1
                         val note = cursor.getString(cursor.getColumnIndex(COLUMN_NOTE))
 
-                        val task = Task(taskName, description, isActive,dueDate, hasTimer, showPieChart, note)
+                        val task = Task(taskName, description, isActive,
+                            dueDate.toString(), hasTimer, showPieChart, note)
                         taskList.add(task)
                     }
                 }
                 taskList
             } catch (e: SQLiteException) {
-                // Handle the exception here
                 e.printStackTrace()
                 ArrayList()
             } finally {
                 db.close()
             }
         }
+
 
         private fun parseDate(dateStr: String): Date {
             val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())

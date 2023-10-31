@@ -26,6 +26,7 @@ class TaskAdapter(private val taskList: ArrayList<Task>) :
         // bind other data to UI elements
     }
 
+
     override fun getItemCount(): Int {
         return taskList.size
     }

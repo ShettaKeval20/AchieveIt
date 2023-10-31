@@ -47,6 +47,8 @@ class CustomDialogFragment : DialogFragment() {
             showDatePickerDialog()
         }
 
+        val selectedDate =
+
         // Set click listener for save button
         saveButton.setOnClickListener {
             val taskName = editTextTaskName.text.toString()

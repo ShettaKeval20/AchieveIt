@@ -10,7 +10,7 @@ data class Task(
     var taskName: String,
     var description: String,
     var isActive: Boolean,
-    var dueDate: Date,
+    var dueDate: String,
     var hasTimer: Boolean,
     var showPieChart: Boolean,
     var note: String
