@@ -75,7 +75,6 @@ class CustomDialogFragment : DialogFragment() {
             dialog?.dismiss()
         }
 
-
         return view
     }
 
