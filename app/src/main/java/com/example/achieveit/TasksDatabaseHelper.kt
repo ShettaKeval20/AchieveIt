@@ -5,7 +5,6 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.database.sqlite.SQLiteException
-import android.util.Log
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -22,10 +21,12 @@ class TasksDatabaseHelper(context: Context) :
         const val COLUMN_TASK_NAME = "task_name"
         const val COLUMN_DESCRIPTION = "description"
         const val COLUMN_IS_ACTIVE = "is_active"
+        const val COLUMN_DATE = "Date"
         const val COLUMN_HAS_TIMER = "has_timer"
         const val COLUMN_SHOW_PIE_CHART = "show_pie_chart"
         const val COLUMN_NOTE = "note"
-        private const val SQL_CREATE_ENTRIES = "CREATE TABLE $TABLE_NAME ($COLUMN_TASK_NAME TEXT, $COLUMN_DESCRIPTION TEXT, $COLUMN_IS_ACTIVE INTEGER,  $COLUMN_HAS_TIMER INTEGER, $COLUMN_SHOW_PIE_CHART INTEGER, $COLUMN_NOTE TEXT)"
+
+        private const val SQL_CREATE_ENTRIES = "CREATE TABLE $TABLE_NAME ($COLUMN_TASK_NAME TEXT, $COLUMN_DESCRIPTION TEXT, $COLUMN_IS_ACTIVE INTEGER,  $COLUMN_HAS_TIMER INTEGER, $COLUMN_SHOW_PIE_CHART INTEGER, $COLUMN_DATE DATE)"
         private const val SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS $TABLE_NAME"
     }
 
@@ -34,6 +35,7 @@ class TasksDatabaseHelper(context: Context) :
                 "$COLUMN_TASK_NAME TEXT," +
                 "$COLUMN_DESCRIPTION TEXT," +
                 "$COLUMN_IS_ACTIVE INTEGER," +
+                "$COLUMN_DATE DATE, " +
                 "$COLUMN_HAS_TIMER INTEGER," +
                 "$COLUMN_SHOW_PIE_CHART INTEGER," +
                 "$COLUMN_NOTE TEXT" +
@@ -56,6 +58,7 @@ class TasksDatabaseHelper(context: Context) :
                 put(COLUMN_HAS_TIMER, if (task.hasTimer) 1 else 0)
                 put(COLUMN_SHOW_PIE_CHART, if (task.showPieChart) 1 else 0)
                 put(COLUMN_NOTE, task.note)
+                put(COLUMN_DATE, formatDate(task.Date))
             }
             db.insert(TABLE_NAME, null, values)
         } catch (e: SQLiteException) {
@@ -64,6 +67,9 @@ class TasksDatabaseHelper(context: Context) :
         } finally {
             db.close()
         }
+
+
+
 
 
         //        delete Task
@@ -87,6 +93,8 @@ class TasksDatabaseHelper(context: Context) :
 ////        }
     }
 
+
+
     private fun dateToCalendarFormat(dueDate: Calendar): String {
         val day = dueDate.get(Calendar.DAY_OF_MONTH)
         val month = dueDate.get(Calendar.MONTH) + 1 // Months are 0-based, so add 1
@@ -95,9 +103,21 @@ class TasksDatabaseHelper(context: Context) :
         return String.format(Locale.getDefault(), "%02d/%02d/%04d", month, day, year)
     }
 
-
-    fun deleteTask(task: Task) {
-
+    private fun formatDate(dueDate: Date): String {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        return dateFormat.format(dueDate.time)
     }
+
+    private fun parseDate(dateStr: String): Date {
+        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        try {
+            return dateFormat.parse(dateStr) ?: Date()
+        } catch (e: ParseException) {
+            e.printStackTrace()
+            return Date()
+        }
+    }
+
+
 }
 

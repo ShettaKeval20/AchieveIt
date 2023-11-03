@@ -25,6 +25,7 @@ class TaskAdapter(private val taskList: ArrayList<Task>, private val onItemClick
         holder.timer.text = "Timer: ${task.hasTimer}"
         holder.pieChart.text = "Explode Piechart: ${task.showPieChart}"
         holder.note.text = task.note
+        holder.date.text = "Due Date: ${task.Date}"
         // bind other data to UI elements
 
         holder.itemView.setOnClickListener {
@@ -49,6 +50,7 @@ class TaskAdapter(private val taskList: ArrayList<Task>, private val onItemClick
         val timer: TextView = itemView.findViewById(R.id.timerTextView)
         val pieChart: TextView = itemView.findViewById(R.id.pieChartTextView)
         val note: TextView = itemView.findViewById(R.id.noteTextView)
+        val date: TextView = itemView.findViewById(R.id.dateTextView)
         // define other UI elements here
     }
 }
