@@ -25,16 +25,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:menu="@menu/bottom_menu"
         app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World"
-        android:textSize="22sp"
-        app:layout_constraintBottom_toBottomOf="@+id/frameLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/frameLayout"
-        tools:ignore="MissingConstraints" />
+    
 
 </androidx.constraintlayout.widget.ConstraintLayout>
