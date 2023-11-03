@@ -66,6 +66,29 @@
             android:layout_marginTop="12dp"
             android:text="Date" />
 
+        <TextView
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/pieChartTextView"
+            android:layout_marginTop="12dp"
+            android:text="Priyal" />
+
+        <TextView
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/pieChartTextView"
+            android:layout_marginTop="12dp"
+            android:text="Shah" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/pieChartTextView"
+            android:layout_marginTop="12dp"
+            android:text="Bhootni Daayan" />
+
         <!-- Add any additional views or elements here based on your data from the database -->
 
     </LinearLayout>
