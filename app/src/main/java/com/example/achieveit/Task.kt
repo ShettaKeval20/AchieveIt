@@ -1,6 +1,6 @@
 package com.example.achieveit
 
-import java.util.Date
+import java.util.Calendar
 
 data class Task(
     var taskName: String,
@@ -8,7 +8,6 @@ data class Task(
     var isActive: Boolean,
     var hasTimer: Boolean,
     var showPieChart: Boolean,
-    var note: String,
-    var Date: Date,
+    var note: String
 )
 
