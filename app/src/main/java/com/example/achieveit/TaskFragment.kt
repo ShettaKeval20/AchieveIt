@@ -92,11 +92,6 @@ class TaskFragment : Fragment() {
         confirmDialog.show()
     }
 
-    override fun onResume() {
-        Toast.makeText(context,"On Resume Called!!",Toast.LENGTH_SHORT).show()
-        super.onResume()
-    }
-
     // Define your database helper class
     class TasksDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
