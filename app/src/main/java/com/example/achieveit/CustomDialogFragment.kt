@@ -8,17 +8,19 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Switch
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-class CustomDialogFragment : DialogFragment() {
+class CustomDialogFragment(var taskFragment: TaskFragment, var isEdit: Int, var taskValue: Task?) :
+    DialogFragment() {
 
     private lateinit var dbHelper: TaskFragment.TasksDatabaseHelper // Import the DBHelper from TaskFragment
     private var dueDate: Calendar = Calendar.getInstance()
-    private lateinit var editTextDueDate: EditText
+    private lateinit var editTextDueDate: TextView
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,6 +42,9 @@ class CustomDialogFragment : DialogFragment() {
         val cancelButton = view.findViewById<Button>(R.id.cancelButton)
         editTextDueDate = view.findViewById(R.id.editDate)
 
+        if(isEdit==1)
+            setViewData(view)
+
         editTextDueDate.setOnClickListener {
             showDatePickerDialog()
         }
@@ -49,19 +54,44 @@ class CustomDialogFragment : DialogFragment() {
             val taskName = editTextTaskName.text.toString()
             val description = editTextDescription.text.toString()
             val note = editTextNote.text.toString()
+            val date = editTextDueDate.text.toString()
 
             if (taskName.isEmpty() || description.isEmpty() || note.isEmpty()) {
-                Toast.makeText(requireContext(), "Please fill the details", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Please fill the details", Toast.LENGTH_SHORT)
+                    .show()
+            }
+            else if (date.isEmpty()) {
+                Toast.makeText(requireContext(), "Please Select Date", Toast.LENGTH_SHORT)
+                    .show()
             } else {
                 val isActive = toggleButtonActive.isChecked
                 val hasTimer = toggleButtonTimer.isChecked
                 val showPieChart = toggleButtonPieChart.isChecked
 
                 // Add your data to the database
-                val task = Task(taskName, description, isActive,  hasTimer, showPieChart, note)
-                val isInserted = dbHelper.insertTask(task)
-                if (isInserted != -1L) {
-                    Toast.makeText(requireContext(), "Data saved successfully", Toast.LENGTH_SHORT).show()
+                val task = Task(taskName, description, isActive, hasTimer, showPieChart, note, "",
+                    dueDate.timeInMillis.toString()
+                )
+                if (isEdit == 1) {
+                    val isEdited = dbHelper.updateTask(task, taskValue!!.id)
+                    if (isEdited != -1L) {
+                        Toast.makeText(
+                            requireContext(),
+                            "Data Edited successfully",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        taskFragment.setView()
+                    }
+                } else {
+                    val isInserted = dbHelper.insertTask(task)
+                    if (isInserted != -1L) {
+                        Toast.makeText(
+                            requireContext(),
+                            "Data saved successfully",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        taskFragment.setView()
+                    }
                 }
 
                 // Close the dialog
@@ -78,6 +108,20 @@ class CustomDialogFragment : DialogFragment() {
         return view
     }
 
+    private fun setViewData(view: View) {
+        view.findViewById<EditText>(R.id.editTextTaskName).setText(taskValue?.taskName)
+        view.findViewById<EditText>(R.id.editTextDescription).setText(taskValue?.description)
+        view.findViewById<EditText>(R.id.editTextNote).setText(taskValue?.note)
+        // bind other data to UI elements
+
+        val dueDate: Calendar = Calendar.getInstance()
+        dueDate.timeInMillis = taskValue?.date?.toLong()!!
+        val formattedDate =
+            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(dueDate.time)
+        // Update the due date EditText to display the selected date
+        view.findViewById<TextView>(R.id.editDate).text = formattedDate
+    }
+
     private fun showDatePickerDialog() {
         val year = dueDate.get(Calendar.YEAR)
         val month = dueDate.get(Calendar.MONTH)
@@ -89,7 +133,8 @@ class CustomDialogFragment : DialogFragment() {
                 // Update the selected due date
                 dueDate.set(year, month, dayOfMonth)
                 // Format the date as a string in the desired format
-                val formattedDate = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(dueDate.time)
+                val formattedDate =
+                    SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(dueDate.time)
                 // Update the due date EditText to display the selected date
                 editTextDueDate.setText(formattedDate)
             },
