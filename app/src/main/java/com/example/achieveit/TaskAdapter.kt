@@ -7,6 +7,9 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.recyclerview.widget.RecyclerView
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 class TaskAdapter(private val taskList: ArrayList<Task>, private val onItemClick: (Task) -> Unit) :
     RecyclerView.Adapter<TaskAdapter.ViewHolder>() {
@@ -26,6 +29,13 @@ class TaskAdapter(private val taskList: ArrayList<Task>, private val onItemClick
         holder.pieChart.text = "Explode Piechart: ${task.showPieChart}"
         holder.note.text = task.note
         // bind other data to UI elements
+
+        val dueDate: Calendar = Calendar.getInstance()
+        dueDate.timeInMillis = task.date.toLong()
+        val formattedDate =
+            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(dueDate.time)
+        // Update the due date EditText to display the selected date
+        holder.date.text = formattedDate
 
         holder.itemView.setOnClickListener {
             onItemClick(task)
@@ -49,6 +59,7 @@ class TaskAdapter(private val taskList: ArrayList<Task>, private val onItemClick
         val timer: TextView = itemView.findViewById(R.id.timerTextView)
         val pieChart: TextView = itemView.findViewById(R.id.pieChartTextView)
         val note: TextView = itemView.findViewById(R.id.noteTextView)
+        val date: TextView = itemView.findViewById(R.id.dateTextView)
         // define other UI elements here
     }
 }

@@ -13,14 +13,10 @@ import android.content.ContentValues
 import android.database.sqlite.SQLiteException
 import android.util.Log
 import android.widget.ImageButton
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import java.text.ParseException
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
 
 class TaskFragment : Fragment() {
 
@@ -38,7 +34,13 @@ class TaskFragment : Fragment() {
 
         dbHelper = TasksDatabaseHelper(requireContext())
         tasksRecyclerView = view.findViewById(R.id.tasksRecyclerView)
+        addButton = view.findViewById(R.id.addButton)
 
+        setView()
+        return view
+    }
+
+    fun setView() {
         val allTasks = dbHelper.getAllTasks()
 
         taskAdapter = TaskAdapter(allTasks) { task ->
@@ -47,19 +49,17 @@ class TaskFragment : Fragment() {
         tasksRecyclerView.adapter = taskAdapter
         tasksRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        addButton = view.findViewById(R.id.addButton)
         addButton.setOnClickListener {
-            val customDialogFragment = CustomDialogFragment()
+            val customDialogFragment = CustomDialogFragment(this, 0, null)
             customDialogFragment.show(parentFragmentManager, "CustomDialog")
         }
-        return view
     }
 
-    private fun showOptionsDialog(task: Any) {
+    private fun showOptionsDialog(task: Task) {
         val dialog = AlertDialog.Builder(requireContext())
             .setTitle("Options")
             .setPositiveButton("Edit") { _, _ ->
-                val customDialogFragment = CustomDialogFragment()
+                val customDialogFragment = CustomDialogFragment(this,1,task)
                 customDialogFragment.show(parentFragmentManager, "CustomDialog")
             }
             .setNegativeButton("Delete") { _, _ ->
@@ -93,8 +93,10 @@ class TaskFragment : Fragment() {
     }
 
     override fun onResume() {
+        Toast.makeText(context,"On Resume Called!!",Toast.LENGTH_SHORT).show()
         super.onResume()
     }
+
     // Define your database helper class
     class TasksDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
@@ -113,7 +115,7 @@ class TaskFragment : Fragment() {
                 put(COLUMN_TASK_NAME, task.taskName)
                 put(COLUMN_DESCRIPTION, task.description)
                 put(COLUMN_IS_ACTIVE, if (task.isActive) 1 else 0)
-//                put(COLUMN_DUE_DATE, formatDate(task.dueDate))
+                put(COLUMN_DUE_DATE, task.date)
                 put(COLUMN_HAS_TIMER, if (task.hasTimer) 1 else 0)
                 put(COLUMN_SHOW_PIE_CHART, if (task.showPieChart) 1 else 0)
                 put(COLUMN_NOTE, task.note)
@@ -122,6 +124,24 @@ class TaskFragment : Fragment() {
             db.close()
             return result
         }
+
+        fun updateTask(task: Task, id: String): Long {
+            val db = writableDatabase
+            val values = ContentValues().apply {
+                put(COLUMN_TASK_NAME, task.taskName)
+                put(COLUMN_DESCRIPTION, task.description)
+                put(COLUMN_IS_ACTIVE, if (task.isActive) 1 else 0)
+                put(COLUMN_DUE_DATE, task.date)
+                put(COLUMN_HAS_TIMER, if (task.hasTimer) 1 else 0)
+                put(COLUMN_SHOW_PIE_CHART, if (task.showPieChart) 1 else 0)
+                put(COLUMN_NOTE, task.note)
+            }
+            val result = db.update(TABLE_NAME, values, "$COLUMN_ID = ?", arrayOf(id))
+            db.close()
+            return result.toLong()
+        }
+
+
 
         @SuppressLint("Range")
         fun getAllTasks(): ArrayList<Task> {
@@ -139,8 +159,11 @@ class TaskFragment : Fragment() {
                         val hasTimer = cursor.getInt(cursor.getColumnIndex(COLUMN_HAS_TIMER)) == 1
                         val showPieChart = cursor.getInt(cursor.getColumnIndex(COLUMN_SHOW_PIE_CHART)) == 1
                         val note = cursor.getString(cursor.getColumnIndex(COLUMN_NOTE))
-
-                        val task = Task(taskName, description, isActive, hasTimer, showPieChart, note)
+                        val date = cursor.getString(cursor.getColumnIndex(COLUMN_DUE_DATE))
+                        val id = cursor.getInt(cursor.getColumnIndex(COLUMN_ID))
+                        val task = Task(taskName, description, isActive, hasTimer, showPieChart, note,
+                            id.toString(),date
+                        )
                         taskList.add(task)
                     }
                 }
@@ -178,8 +201,8 @@ class TaskFragment : Fragment() {
         fun deleteTask(task: Task): Any {
             val db = this.writableDatabase
             return try {
-                val whereClause = "$COLUMN_TASK_NAME = ?"
-                val whereArgs = arrayOf(task.taskName)
+                val whereClause = "$COLUMN_ID = ?"
+                val whereArgs = arrayOf(task.id)
                 val deletedRows = db.delete(TABLE_NAME, whereClause, whereArgs)
                 deletedRows // Returns the number of rows deleted
             } catch (e: SQLiteException) {
@@ -196,6 +219,7 @@ class TaskFragment : Fragment() {
             const val DATABASE_VERSION = 1
             const val DATABASE_NAME = "Tasks.db"
             const val TABLE_NAME = "Tasks"
+            const val COLUMN_ID = "taskID"
             const val COLUMN_TASK_NAME = "taskName"
             const val COLUMN_DESCRIPTION = "description"
             const val COLUMN_IS_ACTIVE = "active"
@@ -203,7 +227,7 @@ class TaskFragment : Fragment() {
             const val COLUMN_HAS_TIMER = "timer"
             const val COLUMN_SHOW_PIE_CHART = "pieChart"
             const val COLUMN_NOTE = "note"
-            private const val SQL_CREATE_ENTRIES = "CREATE TABLE $TABLE_NAME ($COLUMN_TASK_NAME TEXT, $COLUMN_DESCRIPTION TEXT, $COLUMN_IS_ACTIVE INTEGER, $COLUMN_DUE_DATE TEXT, $COLUMN_HAS_TIMER INTEGER, $COLUMN_SHOW_PIE_CHART INTEGER, $COLUMN_NOTE TEXT)"
+            private const val SQL_CREATE_ENTRIES = "CREATE TABLE $TABLE_NAME ($COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT,$COLUMN_TASK_NAME TEXT, $COLUMN_DESCRIPTION TEXT, $COLUMN_IS_ACTIVE INTEGER, $COLUMN_DUE_DATE TEXT, $COLUMN_HAS_TIMER INTEGER, $COLUMN_SHOW_PIE_CHART INTEGER, $COLUMN_NOTE TEXT)"
             //private const val SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS $TABLE_NAME"
         }
     }
