@@ -13,17 +13,19 @@ import android.content.ContentValues
 import android.database.sqlite.SQLiteException
 import android.util.Log
 import android.widget.ImageButton
-import android.widget.Toast
+import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.lottie.LottieAnimationView
 
-class TaskFragment : Fragment() {
+class TaskFragment(val taskTitle: String) : Fragment() {
 
     private lateinit var dbHelper: TasksDatabaseHelper
     private lateinit var taskAdapter: TaskAdapter
     private lateinit var tasksRecyclerView: RecyclerView
-    private lateinit var addButton: ImageButton
+    private lateinit var addButton: TextView
+    private lateinit var noDataFoundLayout: LottieAnimationView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,13 +37,32 @@ class TaskFragment : Fragment() {
         dbHelper = TasksDatabaseHelper(requireContext())
         tasksRecyclerView = view.findViewById(R.id.tasksRecyclerView)
         addButton = view.findViewById(R.id.addButton)
-
+        noDataFoundLayout = view.findViewById(R.id.noDataFoundLayout)
         setView()
         return view
     }
 
+    override fun onResume() {
+        setView()
+        super.onResume()
+    }
+
     fun setView() {
-        val allTasks = dbHelper.getAllTasks()
+        val allTasks = dbHelper.getAllTasks(taskTitle)
+        if(allTasks.isEmpty()) {
+            tasksRecyclerView.visibility = View.GONE
+            noDataFoundLayout.visibility = View.VISIBLE
+        }
+        else
+        {
+            noDataFoundLayout.visibility = View.GONE
+            tasksRecyclerView.visibility = View.VISIBLE
+        }
+
+        if(taskTitle=="")
+            addButton.visibility = View.VISIBLE
+        else
+            addButton.visibility = View.GONE
 
         taskAdapter = TaskAdapter(allTasks) { task ->
             showOptionsDialog(task)
@@ -59,7 +80,7 @@ class TaskFragment : Fragment() {
         val dialog = AlertDialog.Builder(requireContext())
             .setTitle("Options")
             .setPositiveButton("Edit") { _, _ ->
-                val customDialogFragment = CustomDialogFragment(this,1,task)
+                val customDialogFragment = CustomDialogFragment(this, 1, task)
                 customDialogFragment.show(parentFragmentManager, "CustomDialog")
             }
             .setNegativeButton("Delete") { _, _ ->
@@ -79,9 +100,9 @@ class TaskFragment : Fragment() {
             .setMessage("Are you sure you want to delete this task?")
             .setPositiveButton("Yes") { _, _ ->
                 val deletedRows = dbHelper.deleteTask(task)
-                val allTasks = dbHelper.getAllTasks()
+                val allTasks = dbHelper.getAllTasks(taskTitle)
                 taskAdapter.updateTasks(allTasks)
-
+                setView()
 //
             }
             .setNegativeButton("No") { dialog, _ ->
@@ -93,7 +114,8 @@ class TaskFragment : Fragment() {
     }
 
     // Define your database helper class
-    class TasksDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+    class TasksDatabaseHelper(context: Context) :
+        SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
         override fun onCreate(db: SQLiteDatabase) {
             db.execSQL(SQL_CREATE_ENTRIES)
@@ -110,6 +132,7 @@ class TaskFragment : Fragment() {
                 put(COLUMN_TASK_NAME, task.taskName)
                 put(COLUMN_DESCRIPTION, task.description)
                 put(COLUMN_IS_ACTIVE, if (task.isActive) 1 else 0)
+                put(COLUMN_IS_COMPLETED, if (task.isCompleted) 1 else 0)
                 put(COLUMN_DUE_DATE, task.date)
                 put(COLUMN_HAS_TIMER, if (task.hasTimer) 1 else 0)
                 put(COLUMN_SHOW_PIE_CHART, if (task.showPieChart) 1 else 0)
@@ -126,6 +149,7 @@ class TaskFragment : Fragment() {
                 put(COLUMN_TASK_NAME, task.taskName)
                 put(COLUMN_DESCRIPTION, task.description)
                 put(COLUMN_IS_ACTIVE, if (task.isActive) 1 else 0)
+                put(COLUMN_IS_COMPLETED, if (task.isCompleted) 1 else 0)
                 put(COLUMN_DUE_DATE, task.date)
                 put(COLUMN_HAS_TIMER, if (task.hasTimer) 1 else 0)
                 put(COLUMN_SHOW_PIE_CHART, if (task.showPieChart) 1 else 0)
@@ -137,11 +161,15 @@ class TaskFragment : Fragment() {
         }
 
 
-
         @SuppressLint("Range")
-        fun getAllTasks(): ArrayList<Task> {
+        fun getAllTasks(taskTitle: String): ArrayList<Task> {
             val taskList = ArrayList<Task>()
-            val selectQuery = "SELECT * FROM $TABLE_NAME"
+            val selectQuery = when (taskTitle) {
+                "Active" -> "SELECT * FROM $TABLE_NAME where $COLUMN_IS_ACTIVE = 1"
+                "Upcoming" -> "SELECT * FROM $TABLE_NAME where $COLUMN_IS_ACTIVE = 0 AND $COLUMN_IS_COMPLETED = 0"
+                "Completed" -> "SELECT * FROM $TABLE_NAME where $COLUMN_IS_COMPLETED = 1"
+                else -> "SELECT * FROM $TABLE_NAME"
+            }
             val db = this.readableDatabase
             Log.d("database", "database open")
 
@@ -149,15 +177,19 @@ class TaskFragment : Fragment() {
                 db.rawQuery(selectQuery, null).use { cursor ->
                     while (cursor.moveToNext()) {
                         val taskName = cursor.getString(cursor.getColumnIndex(COLUMN_TASK_NAME))
-                        val description = cursor.getString(cursor.getColumnIndex(COLUMN_DESCRIPTION))
+                        val description =
+                            cursor.getString(cursor.getColumnIndex(COLUMN_DESCRIPTION))
                         val isActive = cursor.getInt(cursor.getColumnIndex(COLUMN_IS_ACTIVE)) == 1
+                        val isCompleted = cursor.getInt(cursor.getColumnIndex(COLUMN_IS_COMPLETED)) == 1
                         val hasTimer = cursor.getInt(cursor.getColumnIndex(COLUMN_HAS_TIMER)) == 1
-                        val showPieChart = cursor.getInt(cursor.getColumnIndex(COLUMN_SHOW_PIE_CHART)) == 1
+                        val showPieChart =
+                            cursor.getInt(cursor.getColumnIndex(COLUMN_SHOW_PIE_CHART)) == 1
                         val note = cursor.getString(cursor.getColumnIndex(COLUMN_NOTE))
                         val date = cursor.getString(cursor.getColumnIndex(COLUMN_DUE_DATE))
                         val id = cursor.getInt(cursor.getColumnIndex(COLUMN_ID))
-                        val task = Task(taskName, description, isActive, hasTimer, showPieChart, note,
-                            id.toString(),date
+                        val task = Task(
+                            taskName, description, isActive,isCompleted, hasTimer, showPieChart, note,
+                            id.toString(), date
                         )
                         taskList.add(task)
                     }
@@ -218,11 +250,13 @@ class TaskFragment : Fragment() {
             const val COLUMN_TASK_NAME = "taskName"
             const val COLUMN_DESCRIPTION = "description"
             const val COLUMN_IS_ACTIVE = "active"
+            const val COLUMN_IS_COMPLETED = "completed"
             const val COLUMN_DUE_DATE = "dueDate"
             const val COLUMN_HAS_TIMER = "timer"
             const val COLUMN_SHOW_PIE_CHART = "pieChart"
             const val COLUMN_NOTE = "note"
-            private const val SQL_CREATE_ENTRIES = "CREATE TABLE $TABLE_NAME ($COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT,$COLUMN_TASK_NAME TEXT, $COLUMN_DESCRIPTION TEXT, $COLUMN_IS_ACTIVE INTEGER, $COLUMN_DUE_DATE TEXT, $COLUMN_HAS_TIMER INTEGER, $COLUMN_SHOW_PIE_CHART INTEGER, $COLUMN_NOTE TEXT)"
+            private const val SQL_CREATE_ENTRIES =
+                "CREATE TABLE $TABLE_NAME ($COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT,$COLUMN_TASK_NAME TEXT, $COLUMN_DESCRIPTION TEXT, $COLUMN_IS_ACTIVE INTEGER,$COLUMN_IS_COMPLETED INTEGER, $COLUMN_DUE_DATE TEXT, $COLUMN_HAS_TIMER INTEGER, $COLUMN_SHOW_PIE_CHART INTEGER, $COLUMN_NOTE TEXT)"
             //private const val SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS $TABLE_NAME"
         }
     }

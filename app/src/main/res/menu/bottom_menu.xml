@@ -3,11 +3,17 @@
 
     <item android:title="Home"
         android:id="@+id/home"
-        android:icon="@drawable/home"/>
+        android:icon="@drawable/home" />
+
+    <item android:title="Calender"
+        android:id="@+id/calender"
+        android:icon="@drawable/calendar"/>
 
     <item android:title="Task"
         android:id="@+id/task"
         android:icon="@drawable/task"/>
+
+
 
     <item android:title="Notifications"
         android:id="@+id/notifications"

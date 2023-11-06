@@ -1,5 +1,6 @@
 package com.example.achieveit
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -22,6 +23,7 @@ class CustomDialogFragment(var taskFragment: TaskFragment, var isEdit: Int, var 
     private var dueDate: Calendar = Calendar.getInstance()
     private lateinit var editTextDueDate: TextView
 
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -36,6 +38,7 @@ class CustomDialogFragment(var taskFragment: TaskFragment, var isEdit: Int, var 
         val editTextDescription = view.findViewById<EditText>(R.id.editTextDescription)
         val editTextNote = view.findViewById<EditText>(R.id.editTextNote)
         val toggleButtonActive = view.findViewById<Switch>(R.id.toggleButtonActive)
+        val toggleButtonCompleted = view.findViewById<Switch>(R.id.toggleButtonCompleted)
         val toggleButtonTimer = view.findViewById<Switch>(R.id.toggleButtonTimer)
         val toggleButtonPieChart = view.findViewById<Switch>(R.id.toggleButtonPieChart)
         val saveButton = view.findViewById<Button>(R.id.saveButton)
@@ -65,11 +68,13 @@ class CustomDialogFragment(var taskFragment: TaskFragment, var isEdit: Int, var 
                     .show()
             } else {
                 val isActive = toggleButtonActive.isChecked
+                val isCompleted = toggleButtonCompleted.isChecked
                 val hasTimer = toggleButtonTimer.isChecked
                 val showPieChart = toggleButtonPieChart.isChecked
 
+
                 // Add your data to the database
-                val task = Task(taskName, description, isActive, hasTimer, showPieChart, note, "",
+                val task = Task(taskName, description, isActive,isCompleted, hasTimer, showPieChart, note, "",
                     dueDate.timeInMillis.toString()
                 )
                 if (isEdit == 1) {
