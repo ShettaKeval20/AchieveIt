@@ -6,11 +6,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import java.util.Calendar
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 
 class HomeFragment : Fragment() {
 
     private lateinit var wishView: TextView
+    private lateinit var demoCollectionAdapter: DemoCollectionAdapter
+    private lateinit var viewPager: ViewPager2
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -18,16 +23,17 @@ class HomeFragment : Fragment() {
     ): View? {
 
         val view =  inflater.inflate(R.layout.fragment_home, container, false)
-
-        wishView = view.findViewById(R.id.wishView)
-
-        val currentTime = Calendar.getInstance()
-        val currentHour = currentTime.get(Calendar.HOUR_OF_DAY)
-
-        val greeting = getGreeting(currentHour)
-
-        wishView.text = greeting
-
+        demoCollectionAdapter = DemoCollectionAdapter(this)
+        viewPager = view.findViewById(R.id.viewPager)
+        viewPager.adapter = demoCollectionAdapter
+        val tabLayout = view.findViewById<TabLayout>(R.id.tab_layout)
+        TabLayoutMediator(tabLayout, viewPager) { tab, position ->
+            when (position) {
+                0 -> tab.text = "Active"
+                1 -> tab.text = "Upcoming"
+                else -> tab.text = "Completed"
+            }
+        }.attach()
         return view
     }
 
@@ -38,5 +44,22 @@ class HomeFragment : Fragment() {
             in 17..21 -> "Good Evening"
             else -> "Good Night"
         }
+    }
+}
+
+class DemoCollectionAdapter(fragment: Fragment) : FragmentStateAdapter(fragment) {
+
+    override fun getItemCount(): Int = 3
+
+    override fun createFragment(position: Int): Fragment {
+        // Return a NEW fragment instance in createFragment(int).
+        var task:String
+        val fragment =
+        when (position) {
+            0 -> TaskFragment("Active")
+            1 -> TaskFragment("Upcoming")
+            else -> TaskFragment("Completed")
+        }
+        return fragment
     }
 }

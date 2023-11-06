@@ -5,9 +5,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import com.example.achieveit.databinding.ActivityMainBinding
-import android.widget.Button
-import android.widget.RelativeLayout
-import android.view.View
 
 class MainActivity : AppCompatActivity(), AddTaskLayout.OnFragmentInteractionListener {
 
@@ -26,7 +23,8 @@ class MainActivity : AppCompatActivity(), AddTaskLayout.OnFragmentInteractionLis
         binding.bottomNavigationView.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.home -> replaceFragment(HomeFragment())
-                R.id.task -> replaceFragment(TaskFragment())
+                R.id.task -> replaceFragment(TaskFragment(""))
+                R.id.calender -> replaceFragment(TaskFragment("Calender"))
                 R.id.notifications -> replaceFragment(NotificationFragment())
                 else -> {
                 }

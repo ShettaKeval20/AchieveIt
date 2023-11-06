@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fragment_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".TaskFragment">
+    tools:context=".TaskFragment"
+    android:orientation="vertical">
 
         <TextView
             android:id="@+id/titleTextView"
@@ -14,23 +15,58 @@
             android:text="Tasks"
             android:textColor="@android:color/holo_blue_dark"
             android:textSize="24sp"
+            android:visibility="gone"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/SelectDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select Date"
+            android:gravity="center"
+            android:textSize="22dp"
+            android:padding="10dp"
+            android:background="@color/colorPrimary"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:visibility="gone"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/tasksRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="30dp"
             android:layout_weight="1" />
 
-        <ImageButton
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/noDataFoundLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            app:lottie_rawRes="@raw/no_data_found"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            android:layout_weight="1"/>
+
+        <TextView
             android:id="@+id/addButton"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:src="@drawable/add"
-            android:layout_marginBottom="30dp"
-            android:layout_marginRight="50dp"
+            android:text="Add Tasks"
+            android:gravity="center"
+            android:textSize="22dp"
+            android:padding="10dp"
+            android:background="@color/colorPrimary"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
@@ -49,4 +85,4 @@
 
         <!--        </LinearLayout>-->
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>
