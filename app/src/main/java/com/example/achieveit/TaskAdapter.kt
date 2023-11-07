@@ -31,11 +31,11 @@ class TaskAdapter(private val taskList: ArrayList<Task>, private val onItemClick
         // bind other data to UI elements
 
         val dueDate: Calendar = Calendar.getInstance()
-        dueDate.timeInMillis = task.date.toLong()
+        /*dueDate.timeInMillis = task.date.toLong()
         val formattedDate =
             SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(dueDate.time)
-        // Update the due date EditText to display the selected date
-        holder.date.text = formattedDate
+        // Update the due date EditText to display the selected date*/
+        holder.date.text = task.date
 
         holder.itemView.setOnClickListener {
             onItemClick(task)

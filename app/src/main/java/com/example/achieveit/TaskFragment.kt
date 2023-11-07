@@ -1,6 +1,7 @@
 package com.example.achieveit
 
 import android.annotation.SuppressLint
+import android.app.DatePickerDialog
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
@@ -18,14 +19,19 @@ import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 class TaskFragment(val taskTitle: String) : Fragment() {
 
     private lateinit var dbHelper: TasksDatabaseHelper
     private lateinit var taskAdapter: TaskAdapter
     private lateinit var tasksRecyclerView: RecyclerView
+    private lateinit var selectDateButton: TextView
     private lateinit var addButton: TextView
     private lateinit var noDataFoundLayout: LottieAnimationView
+    private var dueDate: Calendar = Calendar.getInstance()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,6 +43,7 @@ class TaskFragment(val taskTitle: String) : Fragment() {
         dbHelper = TasksDatabaseHelper(requireContext())
         tasksRecyclerView = view.findViewById(R.id.tasksRecyclerView)
         addButton = view.findViewById(R.id.addButton)
+        selectDateButton = view.findViewById(R.id.SelectDate)
         noDataFoundLayout = view.findViewById(R.id.noDataFoundLayout)
         setView()
         return view
@@ -49,6 +56,46 @@ class TaskFragment(val taskTitle: String) : Fragment() {
 
     fun setView() {
         val allTasks = dbHelper.getAllTasks(taskTitle)
+        tasksRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        if(taskTitle=="Calender")
+        {
+            selectDateButton.visibility = View.VISIBLE
+            // Format the date as a string in the desired format
+            val formattedDate =
+                SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(dueDate.time)
+            // Update the due date EditText to display the selected date
+            selectDateButton.setText(formattedDate)
+            val allTasks = dbHelper.getData(selectDateButton.text.toString())
+            if(allTasks.isEmpty()) {
+                tasksRecyclerView.visibility = View.GONE
+                noDataFoundLayout.visibility = View.VISIBLE
+            }
+            else
+            {
+                noDataFoundLayout.visibility = View.GONE
+                tasksRecyclerView.visibility = View.VISIBLE
+                taskAdapter = TaskAdapter(allTasks) { task ->
+                    showOptionsDialog(task)
+                }
+                tasksRecyclerView.adapter = taskAdapter
+            }
+        }
+        else
+        {
+            selectDateButton.visibility = View.GONE
+            taskAdapter = TaskAdapter(allTasks) { task ->
+                showOptionsDialog(task)
+            }
+            tasksRecyclerView.adapter = taskAdapter
+            tasksRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        }
+
+        selectDateButton.setOnClickListener {
+            showDatePickerDialog()
+        }
+
         if(allTasks.isEmpty()) {
             tasksRecyclerView.visibility = View.GONE
             noDataFoundLayout.visibility = View.VISIBLE
@@ -64,11 +111,6 @@ class TaskFragment(val taskTitle: String) : Fragment() {
         else
             addButton.visibility = View.GONE
 
-        taskAdapter = TaskAdapter(allTasks) { task ->
-            showOptionsDialog(task)
-        }
-        tasksRecyclerView.adapter = taskAdapter
-        tasksRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         addButton.setOnClickListener {
             val customDialogFragment = CustomDialogFragment(this, 0, null)
@@ -92,6 +134,44 @@ class TaskFragment(val taskTitle: String) : Fragment() {
             .create()
 
         dialog.show()
+    }
+
+    private fun showDatePickerDialog() {
+        val year = dueDate.get(Calendar.YEAR)
+        val month = dueDate.get(Calendar.MONTH)
+        val day = dueDate.get(Calendar.DAY_OF_MONTH)
+
+        val datePickerDialog = DatePickerDialog(
+            requireContext(),
+            DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+                // Update the selected due date
+                dueDate.set(year, month, dayOfMonth)
+                dueDate.set(Calendar.HOUR_OF_DAY, 0)
+                // Format the date as a string in the desired format
+                val formattedDate =
+                    SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(dueDate.time)
+                // Update the due date EditText to display the selected date
+                selectDateButton.setText(formattedDate)
+                val allTasks = dbHelper.getData(selectDateButton.text.toString())
+                if(allTasks.isEmpty()) {
+                    tasksRecyclerView.visibility = View.GONE
+                    noDataFoundLayout.visibility = View.VISIBLE
+                }
+                else
+                {
+                    noDataFoundLayout.visibility = View.GONE
+                    tasksRecyclerView.visibility = View.VISIBLE
+                    taskAdapter = TaskAdapter(allTasks) { task ->
+                        showOptionsDialog(task)
+                    }
+                    tasksRecyclerView.adapter = taskAdapter
+                }
+
+
+            },
+            year, month, day
+        )
+        datePickerDialog.show()
     }
 
     private fun confirmAndDeleteTask(task: Task) {
@@ -124,6 +204,45 @@ class TaskFragment(val taskTitle: String) : Fragment() {
         override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
             //db.execSQL(SQL_DELETE_ENTRIES)
             onCreate(db)
+        }
+
+        @SuppressLint("Range")
+        fun getData(timeInMillis: String)
+                : ArrayList<Task> {
+            val taskList = ArrayList<Task>()
+            val selectQuery = "SELECT * FROM $TABLE_NAME where $COLUMN_DUE_DATE = '$timeInMillis'"
+            val db = this.readableDatabase
+            Log.d("database", "database open")
+
+            return try {
+                db.rawQuery(selectQuery, null).use { cursor ->
+                    while (cursor.moveToNext()) {
+                        val taskName = cursor.getString(cursor.getColumnIndex(TasksDatabaseHelper.COLUMN_TASK_NAME))
+                        val description =
+                            cursor.getString(cursor.getColumnIndex(TasksDatabaseHelper.COLUMN_DESCRIPTION))
+                        val isActive = cursor.getInt(cursor.getColumnIndex(TasksDatabaseHelper.COLUMN_IS_ACTIVE)) == 1
+                        val isCompleted = cursor.getInt(cursor.getColumnIndex(TasksDatabaseHelper.COLUMN_IS_COMPLETED)) == 1
+                        val hasTimer = cursor.getInt(cursor.getColumnIndex(TasksDatabaseHelper.COLUMN_HAS_TIMER)) == 1
+                        val showPieChart =
+                            cursor.getInt(cursor.getColumnIndex(TasksDatabaseHelper.COLUMN_SHOW_PIE_CHART)) == 1
+                        val note = cursor.getString(cursor.getColumnIndex(TasksDatabaseHelper.COLUMN_NOTE))
+                        val date = cursor.getString(cursor.getColumnIndex(COLUMN_DUE_DATE))
+                        val id = cursor.getInt(cursor.getColumnIndex(TasksDatabaseHelper.COLUMN_ID))
+                        val task = Task(
+                            taskName, description, isActive,isCompleted, hasTimer, showPieChart, note,
+                            id.toString(), date
+                        )
+                        taskList.add(task)
+                    }
+                }
+                taskList
+            } catch (e: SQLiteException) {
+                // Handle the exception here
+                e.printStackTrace()
+                ArrayList()
+            } finally {
+                db.close()
+            }
         }
 
         fun insertTask(task: Task): Long {
