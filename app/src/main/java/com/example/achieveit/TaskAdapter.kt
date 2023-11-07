@@ -4,14 +4,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.recyclerview.widget.RecyclerView
-import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Locale
 
-class TaskAdapter(private val taskList: ArrayList<Task>, private val onItemClick: (Task) -> Unit) :
+class TaskAdapter(
+    private val taskList: ArrayList<Task>,
+    private val dbHelper: TaskFragment.TasksDatabaseHelper,
+    private val taskTitle: String,
+    private val onItemClick: (Task) -> Unit
+) :
     RecyclerView.Adapter<TaskAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -37,6 +38,28 @@ class TaskAdapter(private val taskList: ArrayList<Task>, private val onItemClick
         // Update the due date EditText to display the selected date*/
         holder.date.text = task.date
 
+        if (task.isCompleted)
+            holder.completeTextView.visibility = View.GONE
+        else
+            holder.completeTextView.visibility = View.VISIBLE
+
+        if(taskTitle=="")
+        {
+            holder.completeTextView.visibility = View.VISIBLE
+            if (task.isCompleted)
+                holder.completeTextView.visibility = View.GONE
+            else
+                holder.completeTextView.visibility = View.VISIBLE
+        }
+        else
+            holder.completeTextView.visibility = View.GONE
+
+        holder.completeTextView.setOnClickListener {
+            task.isCompleted=true
+            dbHelper.updateTask(task,task.id)
+            notifyDataSetChanged()
+        }
+
         holder.itemView.setOnClickListener {
             onItemClick(task)
         }
@@ -56,6 +79,7 @@ class TaskAdapter(private val taskList: ArrayList<Task>, private val onItemClick
         val taskName: TextView = itemView.findViewById(R.id.taskNameTextView)
         val description: TextView = itemView.findViewById(R.id.descriptionTextView)
         val active: TextView = itemView.findViewById(R.id.activeTextView)
+        val completeTextView: TextView = itemView.findViewById(R.id.completeTextView)
         val timer: TextView = itemView.findViewById(R.id.timerTextView)
         val pieChart: TextView = itemView.findViewById(R.id.pieChartTextView)
         val note: TextView = itemView.findViewById(R.id.noteTextView)
