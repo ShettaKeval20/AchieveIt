@@ -13,7 +13,6 @@ import androidx.fragment.app.Fragment
 import android.content.ContentValues
 import android.database.sqlite.SQLiteException
 import android.util.Log
-import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -75,7 +74,7 @@ class TaskFragment(val taskTitle: String) : Fragment() {
             {
                 noDataFoundLayout.visibility = View.GONE
                 tasksRecyclerView.visibility = View.VISIBLE
-                taskAdapter = TaskAdapter(allTasks) { task ->
+                taskAdapter = TaskAdapter(allTasks, dbHelper, taskTitle) { task ->
                     showOptionsDialog(task)
                 }
                 tasksRecyclerView.adapter = taskAdapter
@@ -84,7 +83,7 @@ class TaskFragment(val taskTitle: String) : Fragment() {
         else
         {
             selectDateButton.visibility = View.GONE
-            taskAdapter = TaskAdapter(allTasks) { task ->
+            taskAdapter = TaskAdapter(allTasks, dbHelper,taskTitle) { task ->
                 showOptionsDialog(task)
             }
             tasksRecyclerView.adapter = taskAdapter
@@ -161,7 +160,7 @@ class TaskFragment(val taskTitle: String) : Fragment() {
                 {
                     noDataFoundLayout.visibility = View.GONE
                     tasksRecyclerView.visibility = View.VISIBLE
-                    taskAdapter = TaskAdapter(allTasks) { task ->
+                    taskAdapter = TaskAdapter(allTasks, dbHelper, taskTitle) { task ->
                         showOptionsDialog(task)
                     }
                     tasksRecyclerView.adapter = taskAdapter
