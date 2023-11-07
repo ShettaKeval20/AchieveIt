@@ -75,7 +75,7 @@ class CustomDialogFragment(var taskFragment: TaskFragment, var isEdit: Int, var 
 
                 // Add your data to the database
                 val task = Task(taskName, description, isActive,isCompleted, hasTimer, showPieChart, note, "",
-                    dueDate.timeInMillis.toString()
+                    date
                 )
                 if (isEdit == 1) {
                     val isEdited = dbHelper.updateTask(task, taskValue!!.id)
@@ -120,11 +120,11 @@ class CustomDialogFragment(var taskFragment: TaskFragment, var isEdit: Int, var 
         // bind other data to UI elements
 
         val dueDate: Calendar = Calendar.getInstance()
-        dueDate.timeInMillis = taskValue?.date?.toLong()!!
+        /*dueDate.timeInMillis = taskValue?.date?.toLong()!!
         val formattedDate =
-            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(dueDate.time)
+            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(dueDate.time)*/
         // Update the due date EditText to display the selected date
-        view.findViewById<TextView>(R.id.editDate).text = formattedDate
+        view.findViewById<TextView>(R.id.editDate).text = taskValue?.date
     }
 
     private fun showDatePickerDialog() {
@@ -137,6 +137,7 @@ class CustomDialogFragment(var taskFragment: TaskFragment, var isEdit: Int, var 
             DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
                 // Update the selected due date
                 dueDate.set(year, month, dayOfMonth)
+                dueDate.set(Calendar.HOUR_OF_DAY, 0)
                 // Format the date as a string in the desired format
                 val formattedDate =
                     SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(dueDate.time)
