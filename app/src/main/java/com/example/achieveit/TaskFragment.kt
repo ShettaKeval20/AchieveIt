@@ -175,7 +175,7 @@ class TaskFragment(val taskTitle: String) : Fragment() {
 
     private fun confirmAndDeleteTask(task: Task) {
         val confirmDialog = AlertDialog.Builder(requireContext())
-            .setTitle("Confirm Delete")
+            .setTitle("Confirm Delete?")
             .setMessage("Are you sure you want to delete this task?")
             .setPositiveButton("Yes") { _, _ ->
                 val deletedRows = dbHelper.deleteTask(task)
