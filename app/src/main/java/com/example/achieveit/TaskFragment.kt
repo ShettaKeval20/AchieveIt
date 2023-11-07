@@ -172,7 +172,6 @@ class TaskFragment(val taskTitle: String) : Fragment() {
         )
         datePickerDialog.show()
     }
-
     private fun confirmAndDeleteTask(task: Task) {
         val confirmDialog = AlertDialog.Builder(requireContext())
             .setTitle("Confirm Delete?")
