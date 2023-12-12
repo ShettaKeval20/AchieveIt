@@ -12,6 +12,8 @@
     <color name="white">#FFFFFFFF</color>
     <color name="cursor">#000000</color>
     <color name="colorPrimary">#2B2D6D</color>
+    <color name="tabTextColor">#ffffff</color>
+    <color name="iconDrawableTint">#ffffff</color>
     <color name="colorPrimaryDark">#ff0000</color>
     <color name="colorAccent">#ffffff</color>
     <color name="successGreen">#66cc00</color>
