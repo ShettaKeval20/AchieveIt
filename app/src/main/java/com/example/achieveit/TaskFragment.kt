@@ -1,33 +1,44 @@
 package com.example.achieveit
 
+import android.R.attr.bitmap
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
+import android.content.ContentValues
 import android.content.Context
+import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
+import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
-import android.content.ContentValues
-import android.database.sqlite.SQLiteException
-import android.util.Log
 import android.view.View.GONE
 import android.view.View.VISIBLE
+import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.FileProvider
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
 import com.faskn.lib.ClickablePieChart
 import com.faskn.lib.Slice
 import com.faskn.lib.buildChart
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
-import kotlin.random.Random
+
 
 class TaskFragment(val taskTitle: String) : Fragment() {
 
@@ -40,6 +51,8 @@ class TaskFragment(val taskTitle: String) : Fragment() {
     private var dueDate: Calendar = Calendar.getInstance()
     private lateinit var chart: ClickablePieChart
     private lateinit var legendLayout: FrameLayout
+    private lateinit var chatlayout: LinearLayout
+    private lateinit var share_chart: ImageView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,9 +67,16 @@ class TaskFragment(val taskTitle: String) : Fragment() {
         selectDateButton = view.findViewById(R.id.SelectDate)
         noDataFoundLayout = view.findViewById(R.id.noDataFoundLayout)
         chart = view.findViewById(R.id.chart)
+        chatlayout = view.findViewById(R.id.chatlayout)
+        share_chart = view.findViewById(R.id.share_chart)
         legendLayout = view.findViewById(R.id.legendLayout)
+        chatlayout.visibility = GONE
         chart.visibility = GONE
         legendLayout.visibility = GONE
+        share_chart.visibility = GONE
+        share_chart.setOnClickListener {
+            getBitmapFromView(view)
+        }
         setView()
         return view
     }
@@ -85,12 +105,54 @@ class TaskFragment(val taskTitle: String) : Fragment() {
             )
         )
     }
+
+    fun getBitmapFromView(view: View): Bitmap? {
+        //Define a bitmap with the same size as the view
+        val returnedBitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
+        //Bind a canvas to it
+        val canvas = Canvas(returnedBitmap)
+        //Get the view's background
+        val bgDrawable = view.background
+        if (bgDrawable != null) //has background drawable, then draw it on the canvas
+            bgDrawable.draw(canvas) else  //does not have background drawable, then draw white background on the canvas
+            canvas.drawColor(Color.WHITE)
+        // draw the view on the canvas
+        view.draw(canvas)
+
+        try {
+            val cachePath = File(requireContext().cacheDir, "images")
+            cachePath.mkdirs() // don't forget to make the directory
+            val stream =
+                FileOutputStream("$cachePath/image.png") // overwrites this image every time
+            returnedBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+            stream.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+
+        val imagePath = File(requireContext().cacheDir, "images")
+        val newFile = File(imagePath, "image.png")
+        val contentUri =
+            FileProvider.getUriForFile(requireContext(), "com.example.myapp.fileprovider", newFile)
+
+        if (contentUri != null) {
+            val shareIntent = Intent()
+            shareIntent.action = Intent.ACTION_SEND
+            shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION) // temp permission for receiving app to read this file
+            shareIntent.setDataAndType(contentUri, requireContext().contentResolver.getType(contentUri))
+            shareIntent.putExtra(Intent.EXTRA_STREAM, contentUri)
+            startActivity(Intent.createChooser(shareIntent, "Choose an app"))
+        }
+        //return the bitmap
+        return returnedBitmap
+    }
+
     fun setView() {
         val allTasks = dbHelper.getAllTasks(taskTitle)
         tasksRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         if(taskTitle=="Reports"){
-            val allTasks = dbHelper.getData(selectDateButton.text.toString())
+            val allTasks = dbHelper.getAllTasks("")
             if(allTasks.isEmpty()) {
                 tasksRecyclerView.visibility = View.GONE
                 noDataFoundLayout.visibility = View.VISIBLE
@@ -98,6 +160,8 @@ class TaskFragment(val taskTitle: String) : Fragment() {
             else {
                 chart.visibility = VISIBLE
                 legendLayout.visibility = VISIBLE
+                chatlayout.visibility = VISIBLE
+                share_chart.visibility = VISIBLE
 
                 val pieChartDSL = buildChart {
                     slices { provideSlices() }
