@@ -90,27 +90,33 @@ class TaskFragment(val taskTitle: String) : Fragment() {
         tasksRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         if(taskTitle=="Reports"){
+            val allTasks = dbHelper.getData(selectDateButton.text.toString())
+            if(allTasks.isEmpty()) {
+                tasksRecyclerView.visibility = View.GONE
+                noDataFoundLayout.visibility = View.VISIBLE
+            }
+            else {
+                chart.visibility = VISIBLE
+                legendLayout.visibility = VISIBLE
 
-            chart.visibility = VISIBLE
-            legendLayout.visibility = VISIBLE
+                val pieChartDSL = buildChart {
+                    slices { provideSlices() }
+                    sliceWidth { 80f }
+                    sliceStartPoint { 0f }
+                    clickListener { angle, index ->
 
-            val pieChartDSL = buildChart {
-                slices { provideSlices() }
-                sliceWidth { 80f }
-                sliceStartPoint { 0f }
-                clickListener { angle, index ->
-
+                    }
                 }
-            }
-            chart.setPieChart(pieChartDSL)
-            chart.showLegend(legendLayout)
+                chart.setPieChart(pieChartDSL)
+                chart.showLegend(legendLayout)
 
-            selectDateButton.visibility = View.GONE
-            taskAdapter = TaskAdapter(allTasks, dbHelper,taskTitle) { task ->
-                showOptionsDialog(task)
+                selectDateButton.visibility = View.GONE
+                taskAdapter = TaskAdapter(allTasks, dbHelper, taskTitle) { task ->
+                    showOptionsDialog(task)
+                }
+                tasksRecyclerView.adapter = taskAdapter
+                tasksRecyclerView.layoutManager = LinearLayoutManager(requireContext())
             }
-            tasksRecyclerView.adapter = taskAdapter
-            tasksRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         }
         else if(taskTitle=="Calender")
         {

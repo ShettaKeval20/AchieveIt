@@ -17,15 +17,13 @@ class MainActivity : AppCompatActivity(), AddTaskLayout.OnFragmentInteractionLis
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         replaceFragment(HomeFragment())
-
-
-
         binding.bottomNavigationView.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.home -> replaceFragment(HomeFragment())
                 R.id.task -> replaceFragment(TaskFragment(""))
                 R.id.calender -> replaceFragment(TaskFragment("Calender"))
                 R.id.notifications -> replaceFragment(NotificationFragment())
+                R.id.settings -> replaceFragment(SettingFragment())
                 else -> {
                 }
             }
