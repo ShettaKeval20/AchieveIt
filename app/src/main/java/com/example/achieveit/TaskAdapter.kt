@@ -1,11 +1,17 @@
 package com.example.achieveit
 
 import android.app.Activity
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager.PERMISSION_GRANTED
+import android.media.RingtoneManager
+import android.os.Build
 import android.provider.CalendarContract
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
@@ -13,8 +19,8 @@ import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -32,15 +38,17 @@ class TaskAdapter(
 
     var context: Context? = null
     val callbackId = 42
+    var reqCode = 1
+    lateinit var intent : Intent
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.taskitems, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.taskitems, parent, false)
         return ViewHolder(view)
     }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
-        context = recyclerView.getContext();
+        context = recyclerView.getContext()
+        intent = Intent(context, MainActivity::class.java)
     }
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val task = taskList[position]
@@ -91,6 +99,15 @@ class TaskAdapter(
         else
             holder.completeTextView.visibility = View.GONE
 
+        holder.notificationTextView.setOnClickListener {
+            context?.let { it1 ->
+                showNotification(
+                    it1,
+                    task.taskName,
+                    task.description,intent,reqCode)
+            }
+        }
+
         holder.completeTextView.setOnClickListener {
             task.isCompleted=true
             dbHelper.updateTask(task,task.id)
@@ -118,6 +135,37 @@ class TaskAdapter(
 
     override fun getItemCount(): Int {
         return taskList.size
+    }
+
+    fun showNotification(
+        context: Context,
+        title: String?,
+        message: String?,
+        intent: Intent?,
+        reqCode: Int
+    ) {
+        val pendingIntent =
+            PendingIntent.getActivity(context, reqCode, intent,
+                PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE)
+        val CHANNEL_ID = "channel_name" // The id of the channel.
+        val notificationBuilder: NotificationCompat.Builder =
+            NotificationCompat.Builder(context, CHANNEL_ID)
+                .setSmallIcon(R.drawable.logo)
+                .setContentTitle(title)
+                .setContentText(message)
+                .setAutoCancel(true)
+                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                .setContentIntent(pendingIntent)
+        val notificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name: CharSequence = "Channel Name" // The user-visible name of the channel.
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val mChannel = NotificationChannel(CHANNEL_ID, name, importance)
+            notificationManager.createNotificationChannel(mChannel)
+        }
+        notificationManager.notify(reqCode, notificationBuilder.build()) // 0 is the request code, it should be unique id
+        Log.d("showNotification", "showNotification: $reqCode")
     }
 
     private fun checkPermission(task: Task, callbackId: Int, vararg permissionsId: String) {
@@ -157,7 +205,7 @@ class TaskAdapter(
         setReminderForEvent(eventID, notifyTime)
     }
 
-    private fun setReminderForEvent(eventID: Long, notifyTime: Int){
+    private fun setReminderForEvent(eventID: Long, notifyTime: Int) {
         val otherValues = ContentValues().apply {
             put(CalendarContract.Reminders.MINUTES, notifyTime)
             put(CalendarContract.Reminders.MINUTES, 0)
@@ -165,9 +213,7 @@ class TaskAdapter(
             put(CalendarContract.Reminders.METHOD, CalendarContract.Reminders.METHOD_ALERT)
         }
         context?.contentResolver?.insert(CalendarContract.Reminders.CONTENT_URI, otherValues)
-
-
-    // outputs a URI
+        // outputs a URI
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -180,6 +226,7 @@ class TaskAdapter(
         val note: TextView = itemView.findViewById(R.id.noteTextView)
         val date: TextView = itemView.findViewById(R.id.dateTextView)
         val reminderTextView: TextView = itemView.findViewById(R.id.reminderTextView)
+        val notificationTextView: TextView = itemView.findViewById(R.id.notificationTextView)
         // define other UI elements here
     }
 }
