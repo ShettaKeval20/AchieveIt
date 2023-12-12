@@ -15,8 +15,8 @@
 
 
 
-    <item android:title="Notifications"
+    <item android:title="Reports"
         android:id="@+id/notifications"
-        android:icon="@drawable/notifications"/>
+        android:icon="@drawable/pie_chart"/>
 <!--    <item android:title="Item" />-->
 </menu>

@@ -13,14 +13,21 @@ import androidx.fragment.app.Fragment
 import android.content.ContentValues
 import android.database.sqlite.SQLiteException
 import android.util.Log
+import android.view.View.GONE
+import android.view.View.VISIBLE
+import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
+import com.faskn.lib.ClickablePieChart
+import com.faskn.lib.Slice
+import com.faskn.lib.buildChart
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import kotlin.random.Random
 
 class TaskFragment(val taskTitle: String) : Fragment() {
 
@@ -31,6 +38,8 @@ class TaskFragment(val taskTitle: String) : Fragment() {
     private lateinit var addButton: TextView
     private lateinit var noDataFoundLayout: LottieAnimationView
     private var dueDate: Calendar = Calendar.getInstance()
+    private lateinit var chart: ClickablePieChart
+    private lateinit var legendLayout: FrameLayout
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,6 +53,10 @@ class TaskFragment(val taskTitle: String) : Fragment() {
         addButton = view.findViewById(R.id.addButton)
         selectDateButton = view.findViewById(R.id.SelectDate)
         noDataFoundLayout = view.findViewById(R.id.noDataFoundLayout)
+        chart = view.findViewById(R.id.chart)
+        legendLayout = view.findViewById(R.id.legendLayout)
+        chart.visibility = GONE
+        legendLayout.visibility = GONE
         setView()
         return view
     }
@@ -53,11 +66,53 @@ class TaskFragment(val taskTitle: String) : Fragment() {
         super.onResume()
     }
 
+    private fun provideSlices(): ArrayList<Slice> {
+        return arrayListOf(
+            Slice(
+                dbHelper.getAllTasks("Active").size.toFloat(),
+                R.color.colorPrimary,
+                "Active Tasks"
+            ),
+            Slice(
+                dbHelper.getAllTasks("Upcoming").size.toFloat(),
+                R.color.colorPrimaryDark,
+                "Upcoming Tasks"
+            ),
+            Slice(
+                dbHelper.getAllTasks("Completed").size.toFloat(),
+                R.color.successGreen,
+                "Completed Tasks"
+            )
+        )
+    }
     fun setView() {
         val allTasks = dbHelper.getAllTasks(taskTitle)
         tasksRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        if(taskTitle=="Calender")
+        if(taskTitle=="Reports"){
+
+            chart.visibility = VISIBLE
+            legendLayout.visibility = VISIBLE
+
+            val pieChartDSL = buildChart {
+                slices { provideSlices() }
+                sliceWidth { 80f }
+                sliceStartPoint { 0f }
+                clickListener { angle, index ->
+
+                }
+            }
+            chart.setPieChart(pieChartDSL)
+            chart.showLegend(legendLayout)
+
+            selectDateButton.visibility = View.GONE
+            taskAdapter = TaskAdapter(allTasks, dbHelper,taskTitle) { task ->
+                showOptionsDialog(task)
+            }
+            tasksRecyclerView.adapter = taskAdapter
+            tasksRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        }
+        else if(taskTitle=="Calender")
         {
             selectDateButton.visibility = View.VISIBLE
             // Format the date as a string in the desired format

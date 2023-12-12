@@ -2,6 +2,7 @@ package com.example.achieveit
 
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -62,6 +63,14 @@ class TaskAdapter(
 
         holder.itemView.setOnClickListener {
             onItemClick(task)
+        }
+
+        if(taskTitle=="Reports"){
+            holder.active.visibility = GONE
+            holder.timer.visibility = GONE
+            holder.pieChart.visibility = GONE
+            holder.note.visibility = GONE
+            holder.date.visibility = GONE
         }
     }
 

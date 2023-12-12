@@ -60,7 +60,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-database-ktx:20.2.2'
 
     implementation 'com.google.android.gms:play-services-auth:20.7.0'
-
+    implementation 'com.github.furkanaskin:ClickablePieChart:1.0.9'
 //    Google Dependency
     implementation 'com.google.android.gms:play-services-auth:20.7.0'
     implementation 'com.google.firebase:firebase-auth:22.1.2'
