@@ -18,5 +18,9 @@
     <item android:title="Reports"
         android:id="@+id/notifications"
         android:icon="@drawable/pie_chart"/>
+
+    <item android:title="Settings"
+        android:id="@+id/settings"
+        android:icon="@drawable/settings"/>
 <!--    <item android:title="Item" />-->
 </menu>
